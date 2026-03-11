@@ -338,6 +338,13 @@ function ConfettiEffect({ active }) {
   );
 }
 
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return "おはよう";
+  if (h >= 12 && h < 17) return "こんにちは";
+  return "こんばんは";
+}
+
 function TopBar({ onBack, title, stars, onStamps }) {
   return (
     <div
@@ -424,7 +431,7 @@ function BigButton({ children, onClick, color, bg, style: s, disabled }) {
 function HomeScreen({ onSelect, stars, onStamps }) {
   return (
     <div>
-      <TopBar title="まなぼう！" stars={stars} onStamps={onStamps} />
+      <TopBar title={`${getGreeting()}、れいくん！`} stars={stars} onStamps={onStamps} />
       <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
         {/* Mascot */}
         <div
@@ -436,7 +443,7 @@ function HomeScreen({ onSelect, stars, onStamps }) {
         >
           <div style={{ fontSize: 72 }}>🧒</div>
           <p style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginTop: 8 }}>
-            きょうは なにを べんきょうする？
+            きょうは なにを べんきょう する？
           </p>
         </div>
 
