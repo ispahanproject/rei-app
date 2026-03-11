@@ -740,24 +740,50 @@ function generateQuiz(subject, count) {
     switch (subject) {
       case "hiragana": {
         const item = HIRAGANA[randInt(0, HIRAGANA.length - 1)];
-        const others = pick(HIRAGANA.filter((h) => h.char !== item.char), 3).map((h) => h.reading);
-        qs.push({
-          display: item.char,
-          question: `「${item.char}」の よみかた は？`,
-          options: shuffle([item.reading, ...others]),
-          answer: item.reading,
-        });
+        const others = pick(HIRAGANA.filter((h) => h.char !== item.char), 3);
+        const type = randInt(0, 1);
+        if (type === 0) {
+          // Picture → pick hiragana
+          const emoji = item.hint.split(" ")[0];
+          const word = item.hint.split(" ")[1];
+          qs.push({
+            display: emoji,
+            question: `「${word}」の さいしょの もじは？`,
+            options: shuffle([item.char, ...others.map((h) => h.char)]),
+            answer: item.char,
+          });
+        } else {
+          // Hiragana → pick picture
+          qs.push({
+            display: item.char,
+            question: `「${item.char}」から はじまるのは？`,
+            options: shuffle([item.hint, ...others.map((h) => h.hint)]),
+            answer: item.hint,
+          });
+        }
         break;
       }
       case "katakana": {
         const item = KATAKANA[randInt(0, KATAKANA.length - 1)];
-        const others = pick(KATAKANA.filter((k) => k.char !== item.char), 3).map((k) => k.reading);
-        qs.push({
-          display: item.char,
-          question: `「${item.char}」の よみかた は？`,
-          options: shuffle([item.reading, ...others]),
-          answer: item.reading,
-        });
+        const others = pick(KATAKANA.filter((k) => k.char !== item.char), 3);
+        const type = randInt(0, 1);
+        if (type === 0) {
+          const emoji = item.hint.split(" ")[0];
+          const word = item.hint.split(" ")[1];
+          qs.push({
+            display: emoji,
+            question: `「${word}」の さいしょの もじは？`,
+            options: shuffle([item.char, ...others.map((k) => k.char)]),
+            answer: item.char,
+          });
+        } else {
+          qs.push({
+            display: item.char,
+            question: `「${item.char}」から はじまるのは？`,
+            options: shuffle([item.hint, ...others.map((k) => k.hint)]),
+            answer: item.hint,
+          });
+        }
         break;
       }
       case "numbers": {
