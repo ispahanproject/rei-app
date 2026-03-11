@@ -170,12 +170,12 @@ function FlagImage({ code, size = "large" }) {
 }
 
 const SUBJECTS = [
-  { id: "hiragana", label: "ひらがな", icon: "あ", color: "#F472B6", bg: "#FDF2F8" },
-  { id: "katakana", label: "カタカナ", icon: "ア", color: "#818CF8", bg: "#EEF2FF" },
-  { id: "numbers", label: "すうじ", icon: "123", color: "#34D399", bg: "#ECFDF5" },
-  { id: "english", label: "えいご", icon: "ABC", color: "#FBBF24", bg: "#FFFBEB" },
-  { id: "colors", label: "いろ・かたち", icon: "🎨", color: "#F87171", bg: "#FEF2F2" },
-  { id: "flags", label: "こっき", icon: "🏁", color: "#06B6D4", bg: "#ECFEFF" },
+  { id: "hiragana", label: "ひらがな", icon: "あ", color: "#FF6B6B", bg: "#FFF0F0", sea: "🐙" },
+  { id: "katakana", label: "カタカナ", icon: "ア", color: "#4ECDC4", bg: "#E8FBF8", sea: "🐠" },
+  { id: "numbers", label: "すうじ", icon: "123", color: "#2ECC71", bg: "#EAFAF0", sea: "🐢" },
+  { id: "english", label: "えいご", icon: "ABC", color: "#FFD93D", bg: "#FFF9E0", sea: "🐟" },
+  { id: "colors", label: "いろ・かたち", icon: "🎨", color: "#FF8C42", bg: "#FFF3EB", sea: "🦀" },
+  { id: "flags", label: "こっき", icon: "🏁", color: "#3B82F6", bg: "#EBF2FF", sea: "🐬" },
 ];
 
 const GAME_MODES = [
@@ -185,10 +185,10 @@ const GAME_MODES = [
 ];
 
 const STAMPS = [
-  "⭐", "🌟", "🏆", "🎖️", "👑", "🌈", "🦄", "🚀",
-  "🎯", "💎", "🔥", "🎉", "🌸", "🍀", "🦋", "🐬",
-  "🎸", "🎪", "🧁", "🍭", "🎈", "🎁", "🌻", "🐝",
-  "🦊", "🐼", "🐧", "🦁", "🐳", "🦉",
+  "🦈", "🐟", "🐠", "🐡", "🦀", "🐙", "🦑", "🐚",
+  "🐬", "🐳", "🐋", "🦭", "🐢", "🦞", "🌊", "⚓",
+  "🏖️", "🐠", "🌴", "🐚", "⭐", "🦈", "🐡", "🐬",
+  "🏝️", "🧜", "🦐", "🐳", "🌟", "🐟",
 ];
 
 // ─── Utility ────────────────────────────────────────────────────────────────
@@ -203,26 +203,27 @@ const globalCSS = `
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   :root {
-    --bg: #FFF8F0;
+    --bg: #E8F4FD;
     --card: #FFFFFF;
-    --text: #2D1B4E;
-    --text-light: #7C6B99;
-    --pink: #F472B6;
-    --purple: #818CF8;
-    --green: #34D399;
-    --yellow: #FBBF24;
-    --red: #F87171;
-    --orange: #FB923C;
-    --blue: #60A5FA;
-    --shadow: 0 4px 20px rgba(45, 27, 78, 0.08);
-    --shadow-lg: 0 8px 40px rgba(45, 27, 78, 0.12);
+    --text: #1A3A5C;
+    --text-light: #5B8BA8;
+    --coral: #FF6B6B;
+    --ocean: #4ECDC4;
+    --green: #2ECC71;
+    --yellow: #FFD93D;
+    --red: #FF6B6B;
+    --orange: #FF8C42;
+    --blue: #3B82F6;
+    --shadow: 0 4px 20px rgba(26, 58, 92, 0.10);
+    --shadow-lg: 0 8px 40px rgba(26, 58, 92, 0.15);
     --radius: 24px;
     --radius-sm: 16px;
   }
 
   body {
     font-family: 'M PLUS Rounded 1c', 'Fredoka', sans-serif;
-    background: var(--bg);
+    background: linear-gradient(180deg, #E8F4FD 0%, #D0ECFB 40%, #B8E0F7 70%, #87CEEB 100%);
+    background-attachment: fixed;
     color: var(--text);
     overflow-x: hidden;
     min-height: 100vh;
@@ -275,37 +276,73 @@ const globalCSS = `
     0% { filter: hue-rotate(0deg); }
     100% { filter: hue-rotate(360deg); }
   }
+  @keyframes swim {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(8px) rotate(3deg); }
+    75% { transform: translateX(-8px) rotate(-3deg); }
+  }
+  @keyframes bubbleRise {
+    0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }
+  }
+  @keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
 `;
 
 // ─── Components ─────────────────────────────────────────────────────────────
 
-function Bubbles() {
-  const bubbles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    size: randInt(20, 60),
-    left: randInt(0, 100),
-    delay: Math.random() * 5,
-    dur: randInt(8, 15),
-    color: ["#F472B6", "#818CF8", "#34D399", "#FBBF24", "#60A5FA", "#FB923C"][i % 6],
-  }));
+function OceanBackground() {
+  const items = Array.from({ length: 16 }, (_, i) => {
+    const isFish = i < 6;
+    const fishEmoji = ["🐟", "🐠", "🐡", "🦀", "🐚", "🌊"][i % 6];
+    return {
+      id: i,
+      isFish,
+      emoji: isFish ? fishEmoji : null,
+      size: isFish ? randInt(18, 28) : randInt(8, 30),
+      left: randInt(0, 100),
+      delay: Math.random() * 10,
+      dur: randInt(10, 20),
+    };
+  });
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-      {bubbles.map((b) => (
-        <div
-          key={b.id}
-          style={{
-            position: "absolute",
-            width: b.size,
-            height: b.size,
-            borderRadius: "50%",
-            background: b.color,
-            opacity: 0.08,
-            left: `${b.left}%`,
-            bottom: -b.size,
-            animation: `float ${b.dur}s ease-in-out ${b.delay}s infinite`,
-          }}
-        />
-      ))}
+      {items.map((b) =>
+        b.isFish ? (
+          <span
+            key={b.id}
+            style={{
+              position: "absolute",
+              left: `${b.left}%`,
+              bottom: -40,
+              fontSize: b.size,
+              opacity: 0.18,
+              animation: `bubbleRise ${b.dur}s linear ${b.delay}s infinite`,
+            }}
+          >
+            {b.emoji}
+          </span>
+        ) : (
+          <div
+            key={b.id}
+            style={{
+              position: "absolute",
+              width: b.size,
+              height: b.size,
+              borderRadius: "50%",
+              background: "rgba(255,255,255,0.5)",
+              border: "1px solid rgba(255,255,255,0.6)",
+              left: `${b.left}%`,
+              bottom: -b.size,
+              animation: `bubbleRise ${b.dur}s linear ${b.delay}s infinite`,
+            }}
+          />
+        )
+      )}
     </div>
   );
 }
@@ -314,7 +351,7 @@ function ConfettiEffect({ active }) {
   if (!active) return null;
   const pieces = Array.from({ length: 20 }, (_, i) => ({
     id: i,
-    emoji: ["🎉", "⭐", "✨", "🌟", "💫", "🎊"][i % 6],
+    emoji: ["🐟", "⭐", "✨", "🦈", "🐠", "🌊"][i % 6],
     left: randInt(10, 90),
     delay: Math.random() * 0.5,
   }));
@@ -347,57 +384,62 @@ function getGreeting() {
 
 function TopBar({ onBack, title, stars, onStamps }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "12px 16px",
-        background: "rgba(255,255,255,0.85)",
-        backdropFilter: "blur(12px)",
-        borderBottom: "2px solid rgba(0,0,0,0.04)",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-      }}
-    >
-      {onBack ? (
-        <button
-          onClick={onBack}
-          style={{
-            background: "none",
-            border: "none",
-            fontSize: 28,
-            cursor: "pointer",
-            padding: "4px 8px",
-            borderRadius: 12,
-          }}
-        >
-          ←
-        </button>
-      ) : (
-        <div style={{ width: 44 }} />
-      )}
-      <span style={{ fontSize: 20, fontWeight: 800 }}>{title}</span>
-      <button
-        onClick={onStamps}
+    <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
+      <div
         style={{
-          background: "linear-gradient(135deg, #FBBF24, #F59E0B)",
-          border: "none",
-          borderRadius: 20,
-          padding: "6px 14px",
-          fontSize: 16,
-          fontWeight: 700,
-          color: "#fff",
-          cursor: "pointer",
           display: "flex",
           alignItems: "center",
-          gap: 4,
-          boxShadow: "0 2px 8px rgba(245,158,11,0.3)",
+          justifyContent: "space-between",
+          padding: "12px 16px",
+          background: "linear-gradient(135deg, rgba(135,206,235,0.5), rgba(78,205,196,0.35), rgba(255,255,255,0.8))",
+          backdropFilter: "blur(12px)",
         }}
       >
-        ⭐ {stars}
-      </button>
+        {onBack ? (
+          <button
+            onClick={onBack}
+            style={{
+              background: "rgba(255,255,255,0.6)",
+              border: "2px solid rgba(78,205,196,0.3)",
+              fontSize: 22,
+              cursor: "pointer",
+              padding: "4px 10px",
+              borderRadius: 14,
+              lineHeight: 1,
+            }}
+          >
+            🦈
+          </button>
+        ) : (
+          <div style={{ width: 44 }} />
+        )}
+        <span style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>{title}</span>
+        <button
+          onClick={onStamps}
+          style={{
+            background: "linear-gradient(135deg, #FFD93D, #F59E0B)",
+            border: "none",
+            borderRadius: 20,
+            padding: "6px 14px",
+            fontSize: 16,
+            fontWeight: 700,
+            color: "#fff",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            boxShadow: "0 2px 8px rgba(245,158,11,0.3)",
+          }}
+        >
+          ⭐ {stars}
+        </button>
+      </div>
+      {/* Wave decoration */}
+      <div style={{ overflow: "hidden", height: 12, marginTop: -1 }}>
+        <svg viewBox="0 0 1200 12" preserveAspectRatio="none" style={{ width: "200%", height: 12, animation: "waveMove 6s linear infinite" }}>
+          <path d="M0,6 C150,0 300,12 450,6 C600,0 750,12 900,6 C1050,0 1200,12 1200,6 L1200,12 L0,12 Z" fill="rgba(78,205,196,0.15)" />
+        </svg>
+      </div>
     </div>
   );
 }
@@ -433,18 +475,47 @@ function HomeScreen({ onSelect, stars, onStamps }) {
     <div>
       <TopBar title={`${getGreeting()}、れいくん！`} stars={stars} onStamps={onStamps} />
       <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
-        {/* Mascot */}
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: 24,
-            animation: "float 3s ease-in-out infinite",
-          }}
-        >
-          <div style={{ fontSize: 72 }}>🧒</div>
-          <p style={{ fontSize: 22, fontWeight: 800, color: "var(--text)", marginTop: 8 }}>
-            きょうは なにを べんきょう する？
-          </p>
+        {/* Baby Shark Mascot */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div
+            style={{
+              fontSize: 80,
+              animation: "swim 3s ease-in-out infinite",
+              display: "inline-block",
+            }}
+          >
+            🦈
+          </div>
+          {/* Speech bubble */}
+          <div
+            style={{
+              position: "relative",
+              background: "rgba(255,255,255,0.9)",
+              borderRadius: 20,
+              padding: "12px 20px",
+              marginTop: 8,
+              display: "inline-block",
+              boxShadow: "0 2px 12px rgba(26,58,92,0.1)",
+              border: "2px solid rgba(78,205,196,0.3)",
+            }}
+          >
+            <div
+              style={{
+                position: "absolute",
+                top: -10,
+                left: "50%",
+                marginLeft: -8,
+                width: 0,
+                height: 0,
+                borderLeft: "8px solid transparent",
+                borderRight: "8px solid transparent",
+                borderBottom: "10px solid rgba(255,255,255,0.9)",
+              }}
+            />
+            <p style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", margin: 0 }}>
+              きょうは なにを べんきょう する？
+            </p>
+          </div>
         </div>
 
         {/* Subject Cards */}
@@ -458,7 +529,7 @@ function HomeScreen({ onSelect, stars, onStamps }) {
                 alignItems: "center",
                 gap: 16,
                 padding: "18px 20px",
-                background: sub.bg,
+                background: `linear-gradient(135deg, ${sub.bg}, rgba(255,255,255,0.9))`,
                 border: `3px solid ${sub.color}40`,
                 borderRadius: "var(--radius)",
                 cursor: "pointer",
@@ -466,17 +537,23 @@ function HomeScreen({ onSelect, stars, onStamps }) {
                 boxShadow: "var(--shadow)",
                 fontFamily: "inherit",
                 textAlign: "left",
-                transition: "transform 0.15s",
+                transition: "transform 0.15s, box-shadow 0.15s",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.boxShadow = "var(--shadow-lg)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = "var(--shadow)";
+              }}
             >
               <div
                 style={{
                   width: 60,
                   height: 60,
                   borderRadius: 18,
-                  background: `${sub.color}20`,
+                  background: `radial-gradient(circle, ${sub.color}25, ${sub.color}10)`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -484,11 +561,12 @@ function HomeScreen({ onSelect, stars, onStamps }) {
                   fontWeight: 900,
                   color: sub.color,
                   flexShrink: 0,
+                  position: "relative",
                 }}
               >
                 {sub.icon}
               </div>
-              <div>
+              <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
                   {sub.label}
                 </div>
@@ -496,7 +574,7 @@ function HomeScreen({ onSelect, stars, onStamps }) {
                   タップして はじめよう！
                 </div>
               </div>
-              <div style={{ marginLeft: "auto", fontSize: 24, color: sub.color }}>▶</div>
+              <div style={{ fontSize: 22, opacity: 0.6 }}>{sub.sea}</div>
             </button>
           ))}
         </div>
@@ -707,8 +785,8 @@ function QuizGame({ subject, onBack, onEarnStar, stars, onStamps }) {
             let bg = "white";
             let border = "#E5E7EB";
             if (selected !== null) {
-              if (isCorrect) { bg = "#ECFDF5"; border = "#34D399"; }
-              else if (isSelected) { bg = "#FEF2F2"; border = "#F87171"; }
+              if (isCorrect) { bg = "#EAFAF0"; border = "#2ECC71"; }
+              else if (isSelected) { bg = "#FFF0F0"; border = "#FF6B6B"; }
             }
             return (
               <button
@@ -960,7 +1038,7 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
     }
 
     // Drawing settings
-    ctx.strokeStyle = "#4F46E5";
+    ctx.strokeStyle = "#3B82F6";
     ctx.lineWidth = 6;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -1225,12 +1303,12 @@ function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
                   aspectRatio: "1",
                   borderRadius: "var(--radius-sm)",
                   border: isMatched
-                    ? "3px solid #34D399"
+                    ? "3px solid #2ECC71"
                     : isFlipped
                     ? `3px solid ${sub.color}`
                     : "3px solid #E5E7EB",
                   background: isMatched
-                    ? "#ECFDF580"
+                    ? "#EAFAF080"
                     : isFlipped
                     ? "white"
                     : `linear-gradient(135deg, ${sub.color}20, ${sub.color}40)`,
@@ -1317,13 +1395,13 @@ function generateMatchPairs(subject, pairCount) {
 // ─── Result Screen ──────────────────────────────────────────────────────────
 function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps }) {
   const pct = score / total;
-  const msg = pct >= 1 ? "カンペキ！🏆" : pct >= 0.6 ? "すごい！🌟" : "がんばったね！💪";
+  const msg = pct >= 1 ? "カンペキ！🦈" : pct >= 0.6 ? "すごい！🐬" : "がんばったね！🐟";
   return (
     <div>
       <TopBar title="けっか" onBack={onBack} stars={stars} onStamps={onStamps} />
       <div style={{ padding: "40px 16px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ fontSize: 72, animation: pct >= 1 ? "rainbow 2s linear infinite" : "float 2s ease-in-out infinite" }}>
-          {pct >= 1 ? "🏆" : pct >= 0.6 ? "🌟" : "💪"}
+        <div style={{ fontSize: 72, animation: pct >= 1 ? "rainbow 2s linear infinite" : "swim 3s ease-in-out infinite" }}>
+          {pct >= 1 ? "🦈" : pct >= 0.6 ? "🐬" : "🐟"}
         </div>
         <h2 style={{ fontSize: 32, fontWeight: 900, margin: "16px 0 8px" }}>{msg}</h2>
         {subtitle && <p style={{ fontSize: 18, color: "var(--text-light)" }}>{subtitle}</p>}
@@ -1339,7 +1417,7 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps
             boxShadow: "var(--shadow)",
           }}
         >
-          <span style={{ fontSize: 48, fontWeight: 900, color: "#4F46E5" }}>{score}</span>
+          <span style={{ fontSize: 48, fontWeight: 900, color: "#3B82F6" }}>{score}</span>
           <span style={{ fontSize: 20, color: "var(--text-light)" }}> / {total}</span>
         </div>
 
@@ -1365,7 +1443,7 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps
             style={{
               flex: 1,
               padding: "16px",
-              background: "linear-gradient(135deg, #818CF8, #6366F1)",
+              background: "linear-gradient(135deg, #4ECDC4, #3B82F6)",
               border: "none",
               borderRadius: "var(--radius-sm)",
               fontSize: 18,
@@ -1373,7 +1451,7 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps
               fontFamily: "inherit",
               color: "white",
               cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(99,102,241,0.3)",
+              boxShadow: "0 4px 12px rgba(59,130,246,0.3)",
             }}
           >
             🔄 もういちど
@@ -1391,9 +1469,9 @@ function StampsScreen({ onBack, totalStars, stamps }) {
       <TopBar title="スタンプちょう" onBack={onBack} stars={totalStars} onStamps={() => {}} />
       <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 48, animation: "float 2s ease-in-out infinite" }}>📒</div>
+          <div style={{ fontSize: 48, animation: "swim 3s ease-in-out infinite" }}>🐚</div>
           <p style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>
-            あつめた スタンプ: <span style={{ color: "#F59E0B" }}>{stamps.length}</span> / {STAMPS.length}
+            あつめた スタンプ: <span style={{ color: "#3B82F6" }}>{stamps.length}</span> / {STAMPS.length}
           </p>
           <p style={{ fontSize: 14, color: "var(--text-light)", marginTop: 4 }}>
             ⭐ {Math.max(0, 5 - (totalStars % 5))} こ で つぎの スタンプ！
@@ -1413,7 +1491,7 @@ function StampsScreen({ onBack, totalStars, stamps }) {
               style={{
                 width: `${(totalStars % 5) * 20}%`,
                 height: "100%",
-                background: "linear-gradient(90deg, #FBBF24, #F59E0B)",
+                background: "linear-gradient(90deg, #4ECDC4, #3B82F6)",
                 borderRadius: 6,
                 transition: "width 0.5s ease",
               }}
@@ -1431,7 +1509,7 @@ function StampsScreen({ onBack, totalStars, stamps }) {
                   aspectRatio: "1",
                   borderRadius: 16,
                   background: unlocked ? "white" : "#F3F4F6",
-                  border: unlocked ? "2px solid #FBBF24" : "2px dashed #D1D5DB",
+                  border: unlocked ? "2px solid #4ECDC4" : "2px dashed #B8E0F7",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -1441,7 +1519,7 @@ function StampsScreen({ onBack, totalStars, stamps }) {
                   opacity: unlocked ? 1 : 0.4,
                 }}
               >
-                {unlocked ? stamp : "？"}
+                {unlocked ? stamp : "🐚"}
               </div>
             );
           })}
@@ -1463,7 +1541,7 @@ function NewStampOverlay({ stamp, onDone }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.5)",
+        background: "rgba(26,58,92,0.6)",
         zIndex: 1000,
         display: "flex",
         flexDirection: "column",
@@ -1598,7 +1676,7 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", position: "relative" }}>
       <style>{globalCSS}</style>
-      <Bubbles />
+      <OceanBackground />
       <div style={{ position: "relative", zIndex: 1, maxWidth: 520, margin: "0 auto" }}>{content}</div>
       {newStamp && <NewStampOverlay stamp={newStamp} onDone={() => setNewStamp(null)} />}
     </div>
