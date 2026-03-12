@@ -157,12 +157,10 @@ function FlagImage({ code, size = "large" }) {
       width: size === "large" ? "100%" : "100%",
       maxWidth: size === "large" ? 300 : "100%",
       margin: size === "large" ? "0 auto" : 0,
-      borderRadius: size === "large" ? 16 : 8,
+      borderRadius: size === "large" ? 20 : 10,
       overflow: "hidden",
-      boxShadow: size === "large"
-        ? "0 6px 24px rgba(0,0,0,0.18)"
-        : "0 2px 8px rgba(0,0,0,0.1)",
-      border: "3px solid #E5E7EB",
+      boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+      border: "2px solid rgba(83,206,255,0.2)",
       lineHeight: 0,
     }}>
       <img
@@ -176,12 +174,12 @@ function FlagImage({ code, size = "large" }) {
 }
 
 const SUBJECTS = [
-  { id: "hiragana", label: "ひらがな", icon: "あ", color: "#FF6B6B", bg: "#FFF0F0", sea: "🐙" },
-  { id: "katakana", label: "カタカナ", icon: "ア", color: "#4ECDC4", bg: "#E8FBF8", sea: "🐠" },
-  { id: "numbers", label: "すうじ", icon: "123", color: "#2ECC71", bg: "#EAFAF0", sea: "🐢" },
-  { id: "english", label: "えいご", icon: "ABC", color: "#FFD93D", bg: "#FFF9E0", sea: "🐟" },
-  { id: "colors", label: "いろ・かたち", icon: "🎨", color: "#FF8C42", bg: "#FFF3EB", sea: "🦀" },
-  { id: "flags", label: "こっき", icon: "🏁", color: "#3B82F6", bg: "#EBF2FF", sea: "🐬" },
+  { id: "hiragana", label: "ひらがな", icon: "あ", color: "#FF4B78", bg: "#FFF5FA" },
+  { id: "katakana", label: "カタカナ", icon: "ア", color: "#53CEFF", bg: "#DFF7FF" },
+  { id: "numbers", label: "すうじ", icon: "123", color: "#4CD964", bg: "#E0FFE8" },
+  { id: "english", label: "えいご", icon: "ABC", color: "#FFCC02", bg: "#FFF8D6" },
+  { id: "colors", label: "いろ・かたち", icon: "🎨", color: "#FF9500", bg: "#FFF3EB" },
+  { id: "flags", label: "こっき", icon: "🏁", color: "#A659FF", bg: "#F0E0FF" },
 ];
 
 const GAME_MODES = [
@@ -202,33 +200,47 @@ const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 const pick = (arr, n) => shuffle(arr).slice(0, n);
 const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-// ─── Styles ─────────────────────────────────────────────────────────────────
+// BebeFin accent colors for rotating borders etc.
+const BF_COLORS = ["#53CEFF", "#FF4B78", "#A659FF", "#FFCC02", "#4CD964"];
+
+// ─── Styles (BebeFin) ──────────────────────────────────────────────────────
 const globalCSS = `
   @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&family=Fredoka:wght@400;600;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   :root {
-    --bg: #E8F4FD;
+    --bg: #EBFDFF;
+    --bg-pink: #FFF5FA;
     --card: #FFFFFF;
-    --text: #1A3A5C;
-    --text-light: #5B8BA8;
-    --coral: #FF6B6B;
-    --ocean: #4ECDC4;
-    --green: #2ECC71;
-    --yellow: #FFD93D;
-    --red: #FF6B6B;
-    --orange: #FF8C42;
-    --blue: #3B82F6;
-    --shadow: 0 4px 20px rgba(26, 58, 92, 0.10);
-    --shadow-lg: 0 8px 40px rgba(26, 58, 92, 0.15);
-    --radius: 24px;
-    --radius-sm: 16px;
+    --text: #2D3436;
+    --text-light: #8395A7;
+    --cyan: #53CEFF;
+    --cyan-light: #DFF7FF;
+    --pink: #FF4B78;
+    --pink-light: #FFE0EA;
+    --purple: #A659FF;
+    --purple-light: #F0E0FF;
+    --green: #4CD964;
+    --green-light: #E0FFE8;
+    --yellow: #FFCC02;
+    --yellow-light: #FFF8D6;
+    --orange: #FF9500;
+    --coral: #FF4B78;
+    --ocean: #53CEFF;
+    --red: #FF4B78;
+    --blue: #53CEFF;
+    --shadow: 0 4px 16px rgba(83,206,255,0.12);
+    --shadow-lg: 0 8px 32px rgba(83,206,255,0.18);
+    --shadow-card: 0 2px 12px rgba(0,0,0,0.06);
+    --radius: 28px;
+    --radius-sm: 20px;
+    --radius-pill: 50px;
   }
 
   body {
     font-family: 'M PLUS Rounded 1c', 'Fredoka', sans-serif;
-    background: linear-gradient(180deg, #E8F4FD 0%, #D0ECFB 40%, #B8E0F7 70%, #87CEEB 100%);
+    background: #EBFDFF;
     background-attachment: fixed;
     color: var(--text);
     overflow-x: hidden;
@@ -242,12 +254,16 @@ const globalCSS = `
   }
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
   @keyframes wiggle {
     0%, 100% { transform: rotate(0deg); }
-    25% { transform: rotate(-5deg); }
-    75% { transform: rotate(5deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
   }
   @keyframes confetti {
     0% { transform: translateY(0) rotate(0deg); opacity: 1; }
@@ -261,6 +277,10 @@ const globalCSS = `
   @keyframes slideUp {
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes scaleIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
   }
   @keyframes pulse {
     0%, 100% { transform: scale(1); }
@@ -278,88 +298,62 @@ const globalCSS = `
     60% { transform: scale(0.9) rotate(5deg); opacity: 1; }
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
-  @keyframes rainbow {
-    0% { filter: hue-rotate(0deg); }
-    100% { filter: hue-rotate(360deg); }
+  @keyframes celebrateJump {
+    0% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-20px) scale(1.1); }
+    50% { transform: translateY(-25px) scale(1.15); }
+    70% { transform: translateY(-20px) scale(1.1); }
+    100% { transform: translateY(0) scale(1); }
   }
-  @keyframes swim {
-    0%, 100% { transform: translateX(0) rotate(0deg); }
-    25% { transform: translateX(8px) rotate(3deg); }
-    75% { transform: translateX(-8px) rotate(-3deg); }
-  }
-  @keyframes bubbleRise {
-    0% { transform: translateY(100vh) scale(0.8); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 0.6; }
-    100% { transform: translateY(-10vh) scale(1.1); opacity: 0; }
-  }
-  @keyframes waveMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+  @keyframes floatUp {
+    0% { transform: translateY(0) scale(1); opacity: 0.08; }
+    50% { opacity: 0.12; }
+    100% { transform: translateY(-100vh) scale(1.1); opacity: 0; }
   }
 `;
 
 // ─── Components ─────────────────────────────────────────────────────────────
 
-function OceanBackground() {
-  const items = Array.from({ length: 16 }, (_, i) => {
-    const isFish = i < 6;
-    const fishEmoji = ["🐟", "🐠", "🐡", "🦀", "🐚", "🌊"][i % 6];
-    return {
-      id: i,
-      isFish,
-      emoji: isFish ? fishEmoji : null,
-      size: isFish ? randInt(18, 28) : randInt(8, 30),
-      left: randInt(0, 100),
-      delay: Math.random() * 10,
-      dur: randInt(10, 20),
-    };
-  });
+function SoftBackground() {
+  const items = Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    size: randInt(20, 60),
+    left: randInt(0, 100),
+    top: randInt(0, 100),
+    delay: Math.random() * 15,
+    dur: randInt(18, 35),
+    color: BF_COLORS[i % 5],
+  }));
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-      {items.map((b) =>
-        b.isFish ? (
-          <span
-            key={b.id}
-            style={{
-              position: "absolute",
-              left: `${b.left}%`,
-              bottom: -40,
-              fontSize: b.size,
-              opacity: 0.18,
-              animation: `bubbleRise ${b.dur}s linear ${b.delay}s infinite`,
-            }}
-          >
-            {b.emoji}
-          </span>
-        ) : (
-          <div
-            key={b.id}
-            style={{
-              position: "absolute",
-              width: b.size,
-              height: b.size,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.5)",
-              border: "1px solid rgba(255,255,255,0.6)",
-              left: `${b.left}%`,
-              bottom: -b.size,
-              animation: `bubbleRise ${b.dur}s linear ${b.delay}s infinite`,
-            }}
-          />
-        )
-      )}
+      {items.map((b) => (
+        <div
+          key={b.id}
+          style={{
+            position: "absolute",
+            width: b.size,
+            height: b.size,
+            borderRadius: "50%",
+            background: b.color,
+            opacity: 0.06,
+            left: `${b.left}%`,
+            top: `${b.top}%`,
+            animation: `floatUp ${b.dur}s linear ${b.delay}s infinite`,
+          }}
+        />
+      ))}
     </div>
   );
 }
 
 function ConfettiEffect({ active }) {
   if (!active) return null;
-  const pieces = Array.from({ length: 20 }, (_, i) => ({
+  const pieces = Array.from({ length: 24 }, (_, i) => ({
     id: i,
-    emoji: ["🐟", "⭐", "✨", "🦈", "🐠", "🌊"][i % 6],
-    left: randInt(10, 90),
-    delay: Math.random() * 0.5,
+    emoji: ["⭐", "✨", "🌟", "💖", "🎉", "⭐"][i % 6],
+    left: randInt(5, 95),
+    delay: Math.random() * 0.6,
+    size: randInt(18, 32),
   }));
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 999 }}>
@@ -370,8 +364,8 @@ function ConfettiEffect({ active }) {
             position: "absolute",
             left: `${p.left}%`,
             top: "50%",
-            fontSize: randInt(20, 36),
-            animation: `confetti 1.2s ease-out ${p.delay}s forwards`,
+            fontSize: p.size,
+            animation: `confetti 1.4s ease-out ${p.delay}s forwards`,
           }}
         >
           {p.emoji}
@@ -388,64 +382,97 @@ function getGreeting() {
   return "こんばんは";
 }
 
-function TopBar({ onBack, title, stars, onStamps }) {
+// ─── BebeFin Navigation ────────────────────────────────────────────────────
+
+function BottomNav({ screen, onHome, onStamps, stars }) {
+  const isHome = screen === "home";
+  const isStamps = screen === "stamps";
+
   return (
-    <div style={{ position: "sticky", top: 0, zIndex: 100 }}>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "12px 16px",
-          background: "linear-gradient(135deg, rgba(135,206,235,0.5), rgba(78,205,196,0.35), rgba(255,255,255,0.8))",
-          backdropFilter: "blur(12px)",
-        }}
-      >
-        {onBack ? (
-          <button
-            onClick={onBack}
-            style={{
-              background: "rgba(255,255,255,0.6)",
-              border: "2px solid rgba(78,205,196,0.3)",
-              fontSize: 22,
-              cursor: "pointer",
-              padding: "4px 10px",
-              borderRadius: 14,
-              lineHeight: 1,
-            }}
-          >
-            🦈
-          </button>
-        ) : (
-          <div style={{ width: 44 }} />
-        )}
-        <span style={{ fontSize: 20, fontWeight: 800, color: "var(--text)" }}>{title}</span>
-        <button
-          onClick={onStamps}
-          style={{
-            background: "linear-gradient(135deg, #FFD93D, #F59E0B)",
-            border: "none",
-            borderRadius: 20,
-            padding: "6px 14px",
-            fontSize: 16,
-            fontWeight: 700,
-            color: "#fff",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            gap: 4,
-            boxShadow: "0 2px 8px rgba(245,158,11,0.3)",
-          }}
-        >
-          ⭐ {stars}
+    <div style={{
+      position: "fixed",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 100,
+      background: "rgba(255,255,255,0.95)",
+      backdropFilter: "blur(16px)",
+      borderTop: "1px solid rgba(83,206,255,0.15)",
+      padding: "8px 0 env(safe-area-inset-bottom, 8px) 0",
+      display: "flex",
+      justifyContent: "center",
+      gap: 48,
+    }}>
+      <button onClick={onHome} style={{
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+        background: "none", border: "none", cursor: "pointer", fontFamily: "inherit",
+        padding: "4px 16px",
+      }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: "50%",
+          background: isHome ? "linear-gradient(135deg, #53CEFF, #4FB8E8)" : "#F0F0F0",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 24,
+          boxShadow: isHome ? "0 4px 12px rgba(83,206,255,0.4)" : "none",
+          transition: "all 0.2s ease",
+        }}>
+          🏠
+        </div>
+        <span style={{
+          fontSize: 11, fontWeight: 700,
+          color: isHome ? "#53CEFF" : "#8395A7",
+        }}>ホーム</span>
+      </button>
+
+      <button onClick={onStamps} style={{
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+        background: "none", border: "none", cursor: "pointer", fontFamily: "inherit",
+        padding: "4px 16px",
+      }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: "50%",
+          background: isStamps ? "linear-gradient(135deg, #FFCC02, #F5B800)" : "#F0F0F0",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 24,
+          boxShadow: isStamps ? "0 4px 12px rgba(255,204,2,0.4)" : "none",
+          transition: "all 0.2s ease",
+        }}>
+          ⭐
+        </div>
+        <span style={{
+          fontSize: 11, fontWeight: 700,
+          color: isStamps ? "#FFCC02" : "#8395A7",
+        }}>{stars} ⭐</span>
+      </button>
+    </div>
+  );
+}
+
+function InnerTopBar({ onBack, title }) {
+  return (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      padding: "16px 16px 12px",
+      gap: 12,
+    }}>
+      {onBack && (
+        <button onClick={onBack} style={{
+          width: 44, height: 44, borderRadius: "50%",
+          background: "white",
+          border: "2px solid rgba(83,206,255,0.2)",
+          fontSize: 20,
+          cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+          fontFamily: "inherit",
+        }}>
+          ←
         </button>
-      </div>
-      {/* Wave decoration */}
-      <div style={{ overflow: "hidden", height: 12, marginTop: -1 }}>
-        <svg viewBox="0 0 1200 12" preserveAspectRatio="none" style={{ width: "200%", height: 12, animation: "waveMove 6s linear infinite" }}>
-          <path d="M0,6 C150,0 300,12 450,6 C600,0 750,12 900,6 C1050,0 1200,12 1200,6 L1200,12 L0,12 Z" fill="rgba(78,205,196,0.15)" />
-        </svg>
-      </div>
+      )}
+      <span style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
+        {title}
+      </span>
     </div>
   );
 }
@@ -457,16 +484,17 @@ function BigButton({ children, onClick, color, bg, style: s, disabled }) {
       disabled={disabled}
       style={{
         background: bg || "white",
-        border: `3px solid ${color || "#E5E7EB"}`,
-        borderRadius: "var(--radius)",
-        padding: "16px 24px",
+        border: "none",
+        borderRadius: "var(--radius-pill)",
+        padding: "18px 28px",
         fontSize: 20,
-        fontWeight: 700,
+        fontWeight: 800,
         fontFamily: "inherit",
         cursor: disabled ? "not-allowed" : "pointer",
         transition: "all 0.15s ease",
-        boxShadow: "var(--shadow)",
+        boxShadow: color ? `0 4px 16px ${color}30` : "var(--shadow-card)",
         opacity: disabled ? 0.5 : 1,
+        color: color || "var(--text)",
         ...s,
       }}
     >
@@ -476,125 +504,133 @@ function BigButton({ children, onClick, color, bg, style: s, disabled }) {
 }
 
 // ─── Home Screen ────────────────────────────────────────────────────────────
-function HomeScreen({ onSelect, stars, onStamps }) {
+function HomeScreen({ onSelect }) {
   return (
     <div>
-      <TopBar title={`${getGreeting()}、れいくん！`} stars={stars} onStamps={onStamps} />
-      <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
-        {/* Baby Shark Mascot */}
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div
-            style={{
-              animation: "swim 3s ease-in-out infinite",
-              display: "inline-block",
-            }}
-          >
-            <img
-              src={IMG.family}
-              alt="Baby Shark"
-              style={{ width: 160, height: "auto", pointerEvents: "none" }}
-              draggable={false}
-            />
-          </div>
-          {/* Speech bubble */}
-          <div
-            style={{
-              position: "relative",
-              background: "rgba(255,255,255,0.9)",
-              borderRadius: 20,
-              padding: "12px 20px",
-              marginTop: 8,
-              display: "inline-block",
-              boxShadow: "0 2px 12px rgba(26,58,92,0.1)",
-              border: "2px solid rgba(78,205,196,0.3)",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: -10,
-                left: "50%",
-                marginLeft: -8,
-                width: 0,
-                height: 0,
-                borderLeft: "8px solid transparent",
-                borderRight: "8px solid transparent",
-                borderBottom: "10px solid rgba(255,255,255,0.9)",
-              }}
-            />
-            <p style={{ fontSize: 20, fontWeight: 800, color: "var(--text)", margin: 0 }}>
-              きょうは なにを べんきょう する？
-            </p>
-          </div>
+      {/* BebeFin-style Hero */}
+      <div style={{
+        textAlign: "center",
+        padding: "32px 16px 28px",
+        background: "linear-gradient(180deg, #DFF7FF 0%, #EBFDFF 100%)",
+        borderRadius: "0 0 40px 40px",
+        marginBottom: 24,
+      }}>
+        <div style={{ animation: "bounce 3s ease-in-out infinite", display: "inline-block" }}>
+          <img
+            src={IMG.family}
+            alt="Baby Shark"
+            style={{ width: 200, height: "auto", pointerEvents: "none" }}
+            draggable={false}
+          />
         </div>
+        {/* Greeting pill */}
+        <div style={{
+          marginTop: 16,
+          display: "inline-block",
+          background: "white",
+          borderRadius: "var(--radius-pill)",
+          padding: "12px 28px",
+          boxShadow: "var(--shadow-card)",
+        }}>
+          <p style={{
+            fontSize: 22,
+            fontWeight: 900,
+            color: "var(--text)",
+            margin: 0,
+          }}>
+            {getGreeting()}、<span style={{
+              color: "#53CEFF",
+              background: "#DFF7FF",
+              padding: "2px 10px",
+              borderRadius: 10,
+            }}>れいくん</span>！
+          </p>
+        </div>
+        <p style={{
+          fontSize: 16,
+          fontWeight: 700,
+          color: "var(--text-light)",
+          marginTop: 10,
+        }}>
+          きょうは なにを べんきょう する？
+        </p>
+      </div>
 
-        {/* Subject Cards */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {SUBJECTS.map((sub, i) => (
-            <button
-              key={sub.id}
-              onClick={() => onSelect(sub.id)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 16,
-                padding: "18px 20px",
-                background: `linear-gradient(135deg, ${sub.bg}, rgba(255,255,255,0.9))`,
-                border: `3px solid ${sub.color}40`,
-                borderRadius: "var(--radius)",
-                cursor: "pointer",
-                animation: `slideUp 0.4s ease ${i * 0.08}s both`,
-                boxShadow: "var(--shadow)",
-                fontFamily: "inherit",
-                textAlign: "left",
-                transition: "transform 0.15s, box-shadow 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.03)";
-                e.currentTarget.style.boxShadow = "var(--shadow-lg)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "var(--shadow)";
-              }}
-            >
-              <div
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 18,
-                  background: `radial-gradient(circle, ${sub.color}25, ${sub.color}10)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: sub.icon.length > 2 ? 22 : 32,
-                  fontWeight: 900,
-                  color: sub.color,
-                  flexShrink: 0,
-                  position: "relative",
-                }}
-              >
-                {sub.icon}
+      {/* Subject Cards */}
+      <div style={{ padding: "0 16px 100px", display: "flex", flexDirection: "column", gap: 14 }}>
+        {SUBJECTS.map((sub, i) => (
+          <button
+            key={sub.id}
+            onClick={() => onSelect(sub.id)}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 18,
+              padding: "22px 24px",
+              background: "white",
+              border: "none",
+              borderLeft: `5px solid ${sub.color}`,
+              borderRadius: "var(--radius)",
+              cursor: "pointer",
+              animation: `scaleIn 0.3s ease ${i * 0.06}s both`,
+              boxShadow: "var(--shadow-card)",
+              fontFamily: "inherit",
+              textAlign: "left",
+              transition: "transform 0.15s ease, box-shadow 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.02)";
+              e.currentTarget.style.boxShadow = "var(--shadow-lg)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.boxShadow = "var(--shadow-card)";
+            }}
+          >
+            <div style={{
+              width: 64,
+              height: 64,
+              borderRadius: 20,
+              background: sub.bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: sub.icon.length > 2 ? 24 : 34,
+              fontWeight: 900,
+              color: sub.color,
+              flexShrink: 0,
+            }}>
+              {sub.icon}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text)" }}>
+                {sub.label}
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "var(--text)" }}>
-                  {sub.label}
-                </div>
-                <div style={{ fontSize: 13, color: "var(--text-light)", marginTop: 2 }}>
-                  タップして はじめよう！
-                </div>
+              <div style={{ fontSize: 13, color: "var(--text-light)", marginTop: 4, fontWeight: 600 }}>
+                タップして はじめよう！
               </div>
-              <div style={{ fontSize: 22, opacity: 0.6 }}>{sub.sea}</div>
-            </button>
-          ))}
-        </div>
+            </div>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: sub.bg,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 18,
+              color: sub.color,
+              fontWeight: 700,
+            }}>
+              →
+            </div>
+          </button>
+        ))}
       </div>
     </div>
   );
 }
 
 // ─── Subject Home ───────────────────────────────────────────────────────────
-function SubjectHome({ subject, onBack, onSelectMode, stars, onStamps }) {
+function SubjectHome({ subject, onBack, onSelectMode }) {
   const sub = SUBJECTS.find((s) => s.id === subject);
   const modes = (subject === "colors" || subject === "flags")
     ? GAME_MODES.filter((m) => m.id !== "trace")
@@ -602,23 +638,23 @@ function SubjectHome({ subject, onBack, onSelectMode, stars, onStamps }) {
 
   return (
     <div>
-      <TopBar title={sub.label} onBack={onBack} stars={stars} onStamps={onStamps} />
-      <div style={{ padding: "32px 16px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
+      <InnerTopBar title={sub.label} onBack={onBack} />
+      <div style={{ padding: "16px 16px 100px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
         <div
           style={{
-            width: 100,
-            height: 100,
-            borderRadius: 30,
-            background: `${sub.color}18`,
-            border: `4px solid ${sub.color}40`,
+            width: 120,
+            height: 120,
+            borderRadius: 36,
+            background: sub.bg,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: sub.icon.length > 2 ? 36 : 52,
+            fontSize: sub.icon.length > 2 ? 42 : 56,
             fontWeight: 900,
             color: sub.color,
             margin: "0 auto 24px",
             animation: "wiggle 2s ease-in-out infinite",
+            boxShadow: "var(--shadow-card)",
           }}
         >
           {sub.icon}
@@ -637,30 +673,37 @@ function SubjectHome({ subject, onBack, onSelectMode, stars, onStamps }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 16,
-                padding: "20px",
+                padding: "20px 24px",
                 background: "white",
-                border: `3px solid ${sub.color}30`,
+                border: "none",
                 borderRadius: "var(--radius)",
                 cursor: "pointer",
                 fontFamily: "inherit",
                 textAlign: "left",
-                boxShadow: "var(--shadow)",
-                animation: `popIn 0.3s ease ${i * 0.1}s both`,
-                transition: "transform 0.15s, box-shadow 0.15s",
+                boxShadow: "var(--shadow-card)",
+                animation: `scaleIn 0.3s ease ${i * 0.08}s both`,
+                transition: "transform 0.15s ease, box-shadow 0.15s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.03)";
+                e.currentTarget.style.transform = "scale(1.02)";
                 e.currentTarget.style.boxShadow = "var(--shadow-lg)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow = "var(--shadow)";
+                e.currentTarget.style.boxShadow = "var(--shadow-card)";
               }}
             >
-              <span style={{ fontSize: 40 }}>{mode.icon}</span>
+              <div style={{
+                width: 56, height: 56, borderRadius: 18,
+                background: `${sub.color}15`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 32,
+              }}>
+                {mode.icon}
+              </div>
               <div>
-                <div style={{ fontSize: 22, fontWeight: 800 }}>{mode.label}</div>
-                <div style={{ fontSize: 14, color: "var(--text-light)" }}>{mode.desc}</div>
+                <div style={{ fontSize: 22, fontWeight: 900, color: "var(--text)" }}>{mode.label}</div>
+                <div style={{ fontSize: 14, color: "var(--text-light)", fontWeight: 600 }}>{mode.desc}</div>
               </div>
             </button>
           ))}
@@ -671,7 +714,7 @@ function SubjectHome({ subject, onBack, onSelectMode, stars, onStamps }) {
 }
 
 // ─── Quiz Mode ──────────────────────────────────────────────────────────────
-function QuizGame({ subject, onBack, onEarnStar, stars, onStamps }) {
+function QuizGame({ subject, onBack, onEarnStar }) {
   const [questions, setQuestions] = useState([]);
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -724,8 +767,6 @@ function QuizGame({ subject, onBack, onEarnStar, stars, onStamps }) {
           setSelected(null);
           setFinished(false);
         }}
-        stars={stars}
-        onStamps={onStamps}
       />
     );
   }
@@ -734,52 +775,54 @@ function QuizGame({ subject, onBack, onEarnStar, stars, onStamps }) {
 
   return (
     <div>
-      <TopBar title={`${sub.label} クイズ`} onBack={onBack} stars={stars} onStamps={onStamps} />
+      <InnerTopBar title={`${sub.label} クイズ`} onBack={onBack} />
       <ConfettiEffect active={showConfetti} />
-      <div style={{ padding: "20px 16px", maxWidth: 500, margin: "0 auto" }}>
-        {/* Progress */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
-          {Array.from({ length: TOTAL }, (_, i) => (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                height: 8,
-                borderRadius: 4,
-                background: i < qIndex ? sub.color : i === qIndex ? `${sub.color}60` : "#E5E7EB",
-                transition: "background 0.3s",
-              }}
-            />
-          ))}
+      <div style={{ padding: "8px 16px 100px", maxWidth: 500, margin: "0 auto" }}>
+        {/* BebeFin Progress Bar */}
+        <div style={{
+          background: "#F0F0F0",
+          borderRadius: "var(--radius-pill)",
+          height: 12,
+          marginBottom: 8,
+          overflow: "hidden",
+          boxShadow: "inset 0 1px 3px rgba(0,0,0,0.06)",
+        }}>
+          <div style={{
+            width: `${(qIndex / TOTAL) * 100}%`,
+            height: "100%",
+            background: `linear-gradient(90deg, ${sub.color}, ${sub.color}CC)`,
+            borderRadius: "var(--radius-pill)",
+            transition: "width 0.4s ease",
+          }} />
+        </div>
+        <div style={{ textAlign: "center", fontSize: 14, color: "var(--text-light)", fontWeight: 700, marginBottom: 16 }}>
+          {qIndex + 1} / {TOTAL}
         </div>
 
-        {/* Question */}
+        {/* Question Card */}
         <div
           style={{
             background: "white",
             borderRadius: "var(--radius)",
-            padding: "28px 20px",
+            padding: "32px 24px",
             textAlign: "center",
-            boxShadow: "var(--shadow-lg)",
+            boxShadow: "var(--shadow-card)",
             marginBottom: 20,
             animation: "popIn 0.3s ease",
           }}
           key={qIndex}
         >
-          <div style={{ fontSize: 14, color: "var(--text-light)", marginBottom: 8 }}>
-            もんだい {qIndex + 1} / {TOTAL}
-          </div>
           {q.flagCode && (
             <div style={{ marginBottom: 16, animation: "popIn 0.4s ease" }}>
               <FlagImage code={q.flagCode} size="large" />
             </div>
           )}
           {q.display && !q.flagCode && (
-            <div style={{ fontSize: 64, marginBottom: 12, animation: "float 2s ease-in-out infinite" }}>
+            <div style={{ fontSize: 72, marginBottom: 12, animation: "float 2s ease-in-out infinite" }}>
               {q.display}
             </div>
           )}
-          <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.6 }}>{q.question}</div>
+          <div style={{ fontSize: 24, fontWeight: 900, lineHeight: 1.6 }}>{q.question}</div>
           {q.hint && selected !== null && (
             <div style={{ fontSize: 14, color: "var(--text-light)", marginTop: 8 }}>
               💡 {q.hint}
@@ -787,39 +830,41 @@ function QuizGame({ subject, onBack, onEarnStar, stars, onStamps }) {
           )}
         </div>
 
-        {/* Options */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {/* Answer Options */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
           {q.options.map((opt, i) => {
             const isCorrect = opt === q.answer;
             const isSelected = selected === opt;
             let bg = "white";
-            let border = "#E5E7EB";
             if (selected !== null) {
-              if (isCorrect) { bg = "#EAFAF0"; border = "#2ECC71"; }
-              else if (isSelected) { bg = "#FFF0F0"; border = "#FF6B6B"; }
+              if (isCorrect) bg = "#E0FFE8";
+              else if (isSelected) bg = "#FFE0EA";
             }
             return (
               <button
                 key={i}
                 onClick={() => handleAnswer(opt)}
                 style={{
-                  padding: "18px 12px",
+                  padding: "22px 16px",
                   background: bg,
-                  border: `3px solid ${border}`,
+                  border: "none",
                   borderRadius: "var(--radius-sm)",
-                  fontSize: opt.length <= 2 ? 36 : 20,
-                  fontWeight: 700,
+                  fontSize: opt.length <= 2 ? 40 : 22,
+                  fontWeight: 800,
                   fontFamily: "inherit",
                   cursor: selected !== null ? "default" : "pointer",
-                  boxShadow: "var(--shadow)",
-                  transition: "all 0.2s",
-                  animation: selected !== null && isSelected && !isCorrect ? "shake 0.4s ease" : 
+                  boxShadow: selected !== null && isCorrect
+                    ? "0 4px 16px rgba(76,217,100,0.3)"
+                    : "var(--shadow-card)",
+                  transition: "all 0.2s ease",
+                  animation: selected !== null && isSelected && !isCorrect ? "shake 0.4s ease" :
                              selected !== null && isCorrect ? "pulse 0.4s ease" : "none",
+                  minHeight: 72,
                 }}
               >
                 {opt}
-                {selected !== null && isCorrect && <span style={{ marginLeft: 6 }}>✅</span>}
-                {selected !== null && isSelected && !isCorrect && <span style={{ marginLeft: 6 }}>❌</span>}
+                {selected !== null && isCorrect && <span style={{ marginLeft: 8 }}>✅</span>}
+                {selected !== null && isSelected && !isCorrect && <span style={{ marginLeft: 8 }}>❌</span>}
               </button>
             );
           })}
@@ -838,7 +883,6 @@ function generateQuiz(subject, count) {
         const others = pick(HIRAGANA.filter((h) => h.char !== item.char), 3);
         const type = randInt(0, 1);
         if (type === 0) {
-          // Picture → pick hiragana
           const emoji = item.hint.split(" ")[0];
           const word = item.hint.split(" ")[1];
           qs.push({
@@ -848,7 +892,6 @@ function generateQuiz(subject, count) {
             answer: item.char,
           });
         } else {
-          // Hiragana → pick picture
           qs.push({
             display: item.char,
             question: `「${item.char}」から はじまるのは？`,
@@ -886,7 +929,6 @@ function generateQuiz(subject, count) {
         if (type === 0) {
           const num = randInt(1, 10);
           const item = NUMBERS_DATA.counting[num - 1];
-          const others = pick(NUMBERS_DATA.counting.filter((n) => n.num !== num), 3).map((n) => n.word);
           qs.push({
             display: item.emoji.repeat(num > 5 ? 5 : num) + (num > 5 ? `+${num - 5}` : ""),
             question: `${item.emoji} は いくつ？`,
@@ -948,7 +990,7 @@ function generateQuiz(subject, count) {
           const others = pick(COLORS_SHAPES.colors.filter((c) => c.name !== item.name), 3).map((c) => c.name);
           qs.push({
             display: (
-              <div style={{ width: 80, height: 80, borderRadius: 20, background: item.hex, margin: "0 auto", border: "3px solid #E5E7EB" }} />
+              <div style={{ width: 80, height: 80, borderRadius: 24, background: item.hex, margin: "0 auto", boxShadow: "var(--shadow-card)" }} />
             ),
             question: "この いろ は なに？",
             options: shuffle([item.name, ...others]),
@@ -967,7 +1009,6 @@ function generateQuiz(subject, count) {
         break;
       }
       case "flags": {
-        // Show flag image → guess country name
         const item = FLAGS_DATA[randInt(0, FLAGS_DATA.length - 1)];
         const others = pick(FLAGS_DATA.filter((f) => f.name !== item.name), 3).map((f) => f.name);
         qs.push({
@@ -985,7 +1026,7 @@ function generateQuiz(subject, count) {
 }
 
 // ─── Trace Mode ─────────────────────────────────────────────────────────────
-function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
+function TraceGame({ subject, onBack, onEarnStar }) {
   const [items, setItems] = useState([]);
   const [itemIndex, setItemIndex] = useState(0);
   const [drawing, setDrawing] = useState(false);
@@ -1023,11 +1064,11 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#FFFBF5";
+    ctx.fillStyle = "#FFFFFF";
     ctx.fillRect(0, 0, rect.width, rect.height);
 
     // Grid
-    ctx.strokeStyle = "#E5E7EB";
+    ctx.strokeStyle = "rgba(83,206,255,0.15)";
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
@@ -1040,7 +1081,7 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
 
     // Guide character
     if (char) {
-      ctx.fillStyle = "rgba(200, 180, 220, 0.2)";
+      ctx.fillStyle = "rgba(83, 206, 255, 0.12)";
       ctx.font = `bold ${Math.min(rect.width, rect.height) * 0.65}px 'M PLUS Rounded 1c', sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -1048,8 +1089,8 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
     }
 
     // Drawing settings
-    ctx.strokeStyle = "#3B82F6";
-    ctx.lineWidth = 6;
+    ctx.strokeStyle = "#53CEFF";
+    ctx.lineWidth = 8;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
   };
@@ -1119,8 +1160,6 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
           setScore(0);
           setFinished(false);
         }}
-        stars={stars}
-        onStamps={onStamps}
       />
     );
   }
@@ -1131,22 +1170,24 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
 
   return (
     <div>
-      <TopBar title={`${sub.label} なぞりがき`} onBack={onBack} stars={stars} onStamps={onStamps} />
+      <InnerTopBar title={`${sub.label} なぞりがき`} onBack={onBack} />
       <ConfettiEffect active={showConfetti} />
-      <div style={{ padding: "16px 16px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
+      <div style={{ padding: "8px 16px 100px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
         {/* Progress */}
-        <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-          {Array.from({ length: TOTAL }, (_, i) => (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                height: 8,
-                borderRadius: 4,
-                background: i < itemIndex ? sub.color : i === itemIndex ? `${sub.color}60` : "#E5E7EB",
-              }}
-            />
-          ))}
+        <div style={{
+          background: "#F0F0F0",
+          borderRadius: "var(--radius-pill)",
+          height: 12,
+          marginBottom: 16,
+          overflow: "hidden",
+        }}>
+          <div style={{
+            width: `${(itemIndex / TOTAL) * 100}%`,
+            height: "100%",
+            background: `linear-gradient(90deg, ${sub.color}, ${sub.color}CC)`,
+            borderRadius: "var(--radius-pill)",
+            transition: "width 0.4s ease",
+          }} />
         </div>
 
         {/* Prompt */}
@@ -1156,7 +1197,7 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
             {item.hint || item.reading}
           </span>
         </div>
-        <p style={{ fontSize: 16, color: "var(--text-light)", marginBottom: 12 }}>
+        <p style={{ fontSize: 16, color: "var(--text-light)", marginBottom: 12, fontWeight: 600 }}>
           ゆびで なぞって みよう！
         </p>
 
@@ -1165,8 +1206,8 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
           style={{
             borderRadius: "var(--radius)",
             overflow: "hidden",
-            boxShadow: "var(--shadow-lg)",
-            border: "3px solid #E5E7EB",
+            boxShadow: "var(--shadow-card)",
+            border: "2px solid rgba(83,206,255,0.2)",
             touchAction: "none",
           }}
         >
@@ -1189,12 +1230,12 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
             onClick={handleClear}
             style={{
               flex: 1,
-              padding: "14px",
-              background: "#F3F4F6",
-              border: "2px solid #E5E7EB",
-              borderRadius: "var(--radius-sm)",
+              padding: "16px",
+              background: "#F5F5F5",
+              border: "none",
+              borderRadius: "var(--radius-pill)",
               fontSize: 18,
-              fontWeight: 700,
+              fontWeight: 800,
               fontFamily: "inherit",
               cursor: "pointer",
             }}
@@ -1205,16 +1246,16 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
             onClick={handleNext}
             style={{
               flex: 1,
-              padding: "14px",
-              background: `linear-gradient(135deg, ${sub.color}, ${sub.color}CC)`,
+              padding: "16px",
+              background: `linear-gradient(135deg, ${sub.color}, ${sub.color}DD)`,
               border: "none",
-              borderRadius: "var(--radius-sm)",
+              borderRadius: "var(--radius-pill)",
               fontSize: 18,
-              fontWeight: 700,
+              fontWeight: 800,
               fontFamily: "inherit",
               color: "white",
               cursor: "pointer",
-              boxShadow: `0 4px 12px ${sub.color}40`,
+              boxShadow: `0 4px 16px ${sub.color}40`,
             }}
           >
             ✅ つぎへ
@@ -1226,7 +1267,7 @@ function TraceGame({ subject, onBack, onEarnStar, stars, onStamps }) {
 }
 
 // ─── Matching Game ──────────────────────────────────────────────────────────
-function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
+function MatchingGame({ subject, onBack, onEarnStar }) {
   const [cards, setCards] = useState([]);
   const [flipped, setFlipped] = useState([]);
   const [matched, setMatched] = useState([]);
@@ -1283,8 +1324,6 @@ function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
           setMoves(0);
           setFinished(false);
         }}
-        stars={stars}
-        onStamps={onStamps}
       />
     );
   }
@@ -1293,14 +1332,28 @@ function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
 
   return (
     <div>
-      <TopBar title={`${sub.label} マッチング`} onBack={onBack} stars={stars} onStamps={onStamps} />
+      <InnerTopBar title={`${sub.label} マッチング`} onBack={onBack} />
       <ConfettiEffect active={showConfetti} />
-      <div style={{ padding: "16px", maxWidth: 500, margin: "0 auto" }}>
+      <div style={{ padding: "8px 16px 100px", maxWidth: 500, margin: "0 auto" }}>
+        {/* Status pill */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <span style={{ fontSize: 16, color: "var(--text-light)" }}>
-            のこり {cards.length / 2 - matched.length} ペア ・ {moves} かい
-          </span>
+          <div style={{
+            display: "inline-flex",
+            gap: 16,
+            background: "white",
+            borderRadius: "var(--radius-pill)",
+            padding: "10px 24px",
+            boxShadow: "var(--shadow-card)",
+          }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#53CEFF" }}>
+              のこり {cards.length / 2 - matched.length} ペア
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 700, color: "#FF4B78" }}>
+              {moves} かい
+            </span>
+          </div>
         </div>
+
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
           {cards.map((card, i) => {
             const isFlipped = flipped.includes(i);
@@ -1312,21 +1365,17 @@ function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
                 style={{
                   aspectRatio: "1",
                   borderRadius: "var(--radius-sm)",
-                  border: isMatched
-                    ? "3px solid #2ECC71"
-                    : isFlipped
-                    ? `3px solid ${sub.color}`
-                    : "3px solid #E5E7EB",
+                  border: "none",
                   background: isMatched
-                    ? "#EAFAF080"
+                    ? "#E0FFE8"
                     : isFlipped
                     ? "white"
-                    : `linear-gradient(135deg, ${sub.color}20, ${sub.color}40)`,
+                    : `linear-gradient(135deg, ${sub.color}25, ${sub.color}45)`,
                   fontSize: isFlipped || isMatched ? (typeof card.face === "string" && !card.isFlag && card.face.length <= 2 ? 36 : 18) : 28,
-                  fontWeight: 700,
+                  fontWeight: 800,
                   fontFamily: "inherit",
                   cursor: isMatched ? "default" : "pointer",
-                  boxShadow: "var(--shadow)",
+                  boxShadow: "var(--shadow-card)",
                   transition: "all 0.3s ease",
                   transform: isFlipped ? "rotateY(180deg)" : "rotateY(0)",
                   display: "flex",
@@ -1334,14 +1383,14 @@ function MatchingGame({ subject, onBack, onEarnStar, stars, onStamps }) {
                   justifyContent: "center",
                   padding: card.isFlag && (isFlipped || isMatched) ? 6 : 0,
                   overflow: "hidden",
-                  opacity: isMatched ? 0.6 : 1,
+                  opacity: isMatched ? 0.5 : 1,
                 }}
               >
                 {isFlipped || isMatched
                   ? card.isFlag
                     ? <FlagImage code={card.face} size="small" />
                     : card.face
-                  : "？"}
+                  : "🦈"}
               </button>
             );
           })}
@@ -1403,72 +1452,82 @@ function generateMatchPairs(subject, pairCount) {
 }
 
 // ─── Result Screen ──────────────────────────────────────────────────────────
-function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps }) {
+function ResultScreen({ score, total, onBack, onRetry, subtitle }) {
   const pct = score / total;
-  const msg = pct >= 1 ? "カンペキ！🦈" : pct >= 0.6 ? "すごい！🐬" : "がんばったね！🐟";
+  const msg = pct >= 1 ? "カンペキ！" : pct >= 0.6 ? "すごい！" : "がんばったね！";
+  const emoji = pct >= 1 ? "🎉" : pct >= 0.6 ? "⭐" : "💪";
+
   return (
     <div>
-      <TopBar title="けっか" onBack={onBack} stars={stars} onStamps={onStamps} />
-      <div style={{ padding: "40px 16px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ animation: pct >= 1 ? "rainbow 2s linear infinite" : "swim 3s ease-in-out infinite", display: "inline-block" }}>
+      <InnerTopBar title="けっか" onBack={onBack} />
+      <div style={{
+        padding: "40px 16px 120px",
+        maxWidth: 500,
+        margin: "0 auto",
+        textAlign: "center",
+      }}>
+        {/* Character */}
+        <div style={{
+          animation: pct >= 1 ? "celebrateJump 1.5s ease-in-out infinite" : "bounce 3s ease-in-out infinite",
+          display: "inline-block",
+        }}>
           <img
             src={pct >= 1 ? IMG.family : IMG.daddy}
             alt="result"
-            style={{ width: pct >= 1 ? 140 : 100, height: "auto" }}
+            style={{ width: pct >= 1 ? 160 : 120, height: "auto" }}
             draggable={false}
           />
         </div>
-        <h2 style={{ fontSize: 32, fontWeight: 900, margin: "16px 0 8px" }}>{msg}</h2>
-        {subtitle && <p style={{ fontSize: 18, color: "var(--text-light)" }}>{subtitle}</p>}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "baseline",
-            gap: 4,
-            margin: "20px 0",
-            padding: "12px 32px",
-            background: "white",
-            borderRadius: 20,
-            boxShadow: "var(--shadow)",
-          }}
-        >
-          <span style={{ fontSize: 48, fontWeight: 900, color: "#3B82F6" }}>{score}</span>
-          <span style={{ fontSize: 20, color: "var(--text-light)" }}> / {total}</span>
+
+        {/* Emoji */}
+        <div style={{ fontSize: 48, marginTop: 12 }}>{emoji}</div>
+
+        {/* Message pill */}
+        <div style={{
+          display: "inline-block",
+          background: pct >= 1 ? "#DFF7FF" : pct >= 0.6 ? "#FFF8D6" : "#FFF5FA",
+          borderRadius: "var(--radius-pill)",
+          padding: "8px 28px",
+          marginTop: 16,
+        }}>
+          <h2 style={{ fontSize: 32, fontWeight: 900, margin: 0, color: "var(--text)" }}>{msg}</h2>
         </div>
 
-        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-          <button
-            onClick={onBack}
-            style={{
-              flex: 1,
-              padding: "16px",
-              background: "#F3F4F6",
-              border: "2px solid #E5E7EB",
-              borderRadius: "var(--radius-sm)",
-              fontSize: 18,
-              fontWeight: 700,
-              fontFamily: "inherit",
-              cursor: "pointer",
-            }}
-          >
+        {subtitle && <p style={{ fontSize: 18, color: "var(--text-light)", marginTop: 12, fontWeight: 600 }}>{subtitle}</p>}
+
+        {/* Score */}
+        <div style={{
+          display: "inline-flex",
+          alignItems: "baseline",
+          gap: 4,
+          margin: "24px 0",
+          padding: "16px 40px",
+          background: "white",
+          borderRadius: "var(--radius-pill)",
+          boxShadow: "var(--shadow-card)",
+        }}>
+          <span style={{ fontSize: 52, fontWeight: 900, color: "#53CEFF" }}>{score}</span>
+          <span style={{ fontSize: 22, color: "var(--text-light)", fontWeight: 700 }}> / {total}</span>
+        </div>
+
+        {/* Buttons */}
+        <div style={{ display: "flex", gap: 14, marginTop: 28 }}>
+          <button onClick={onBack} style={{
+            flex: 1, padding: "18px",
+            background: "#F5F5F5", border: "none",
+            borderRadius: "var(--radius-pill)",
+            fontSize: 18, fontWeight: 800, fontFamily: "inherit", cursor: "pointer",
+          }}>
             🏠 もどる
           </button>
-          <button
-            onClick={onRetry}
-            style={{
-              flex: 1,
-              padding: "16px",
-              background: "linear-gradient(135deg, #4ECDC4, #3B82F6)",
-              border: "none",
-              borderRadius: "var(--radius-sm)",
-              fontSize: 18,
-              fontWeight: 700,
-              fontFamily: "inherit",
-              color: "white",
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(59,130,246,0.3)",
-            }}
-          >
+          <button onClick={onRetry} style={{
+            flex: 1, padding: "18px",
+            background: "linear-gradient(135deg, #53CEFF, #4FB8E8)",
+            border: "none",
+            borderRadius: "var(--radius-pill)",
+            fontSize: 18, fontWeight: 800, fontFamily: "inherit", color: "white", cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(83,206,255,0.35)",
+          }}>
             🔄 もういちど
           </button>
         </div>
@@ -1481,26 +1540,26 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps
 function StampsScreen({ onBack, totalStars, stamps }) {
   return (
     <div>
-      <TopBar title="スタンプちょう" onBack={onBack} stars={totalStars} onStamps={() => {}} />
-      <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
+      <InnerTopBar title="スタンプちょう" onBack={onBack} />
+      <div style={{ padding: "16px 16px 100px", maxWidth: 500, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ animation: "swim 3s ease-in-out infinite", display: "inline-block" }}>
+          <div style={{ animation: "bounce 3s ease-in-out infinite", display: "inline-block" }}>
             <img src={IMG.daddy} alt="stamps" style={{ width: 80, height: "auto" }} draggable={false} />
           </div>
-          <p style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>
-            あつめた スタンプ: <span style={{ color: "#3B82F6" }}>{stamps.length}</span> / {STAMPS.length}
+          <p style={{ fontSize: 20, fontWeight: 800, marginTop: 8 }}>
+            あつめた スタンプ: <span style={{ color: "#53CEFF" }}>{stamps.length}</span> / {STAMPS.length}
           </p>
-          <p style={{ fontSize: 14, color: "var(--text-light)", marginTop: 4 }}>
+          <p style={{ fontSize: 14, color: "var(--text-light)", marginTop: 4, fontWeight: 600 }}>
             ⭐ {Math.max(0, 5 - (totalStars % 5))} こ で つぎの スタンプ！
           </p>
-          {/* Progress to next stamp */}
+          {/* Progress bar */}
           <div
             style={{
               width: "80%",
-              height: 12,
-              background: "#F3F4F6",
-              borderRadius: 6,
-              margin: "12px auto 0",
+              height: 14,
+              background: "#F0F0F0",
+              borderRadius: "var(--radius-pill)",
+              margin: "16px auto 0",
               overflow: "hidden",
             }}
           >
@@ -1508,15 +1567,15 @@ function StampsScreen({ onBack, totalStars, stamps }) {
               style={{
                 width: `${(totalStars % 5) * 20}%`,
                 height: "100%",
-                background: "linear-gradient(90deg, #4ECDC4, #3B82F6)",
-                borderRadius: 6,
+                background: "linear-gradient(90deg, #53CEFF, #FF4B78)",
+                borderRadius: "var(--radius-pill)",
                 transition: "width 0.5s ease",
               }}
             />
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
           {STAMPS.map((stamp, i) => {
             const unlocked = i < stamps.length;
             return (
@@ -1524,14 +1583,14 @@ function StampsScreen({ onBack, totalStars, stamps }) {
                 key={i}
                 style={{
                   aspectRatio: "1",
-                  borderRadius: 16,
-                  background: unlocked ? "white" : "#F3F4F6",
-                  border: unlocked ? "2px solid #4ECDC4" : "2px dashed #B8E0F7",
+                  borderRadius: 20,
+                  background: unlocked ? "white" : "#F5F5F5",
+                  border: unlocked ? `2px solid ${BF_COLORS[i % 5]}` : "2px dashed rgba(83,206,255,0.2)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   fontSize: unlocked ? 32 : 20,
-                  boxShadow: unlocked ? "var(--shadow)" : "none",
+                  boxShadow: unlocked ? "var(--shadow-card)" : "none",
                   animation: unlocked ? `popIn 0.3s ease ${i * 0.03}s both` : "none",
                   opacity: unlocked ? 1 : 0.4,
                 }}
@@ -1558,46 +1617,49 @@ function NewStampOverlay({ stamp, onDone }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(26,58,92,0.6)",
+        background: "rgba(0,0,0,0.5)",
         zIndex: 1000,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backdropFilter: "blur(4px)",
+        backdropFilter: "blur(8px)",
       }}
       onClick={onDone}
     >
-      <div style={{ fontSize: 100, animation: "stampDrop 0.6s ease-out" }}>{stamp}</div>
-      <p
-        style={{
-          fontSize: 28,
-          fontWeight: 900,
-          color: "white",
-          marginTop: 16,
-          textShadow: "0 2px 8px rgba(0,0,0,0.3)",
-          animation: "slideUp 0.4s ease 0.3s both",
-        }}
-      >
-        あたらしい スタンプ！
-      </p>
-      <p
-        style={{
-          fontSize: 18,
-          color: "rgba(255,255,255,0.8)",
-          marginTop: 8,
-          animation: "slideUp 0.4s ease 0.5s both",
-        }}
-      >
-        スタンプちょう に ついかされたよ！
-      </p>
+      <div style={{
+        background: "white",
+        borderRadius: 32,
+        padding: "40px 48px",
+        textAlign: "center",
+        boxShadow: "0 16px 48px rgba(0,0,0,0.2)",
+        animation: "scaleIn 0.3s ease",
+      }}>
+        <div style={{
+          width: 120, height: 120,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, #DFF7FF, #FFF5FA)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          margin: "0 auto 16px",
+        }}>
+          <div style={{ fontSize: 72, animation: "celebrateJump 1s ease-in-out infinite" }}>
+            {stamp}
+          </div>
+        </div>
+        <p style={{ fontSize: 26, fontWeight: 900, color: "var(--text)", margin: "0 0 8px" }}>
+          あたらしい スタンプ！
+        </p>
+        <p style={{ fontSize: 16, color: "var(--text-light)", fontWeight: 600, margin: 0 }}>
+          スタンプちょう に ついかされたよ！
+        </p>
+      </div>
     </div>
   );
 }
 
 // ─── App ────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [screen, setScreen] = useState("home"); // home, subject, quiz, trace, matching, stamps
+  const [screen, setScreen] = useState("home");
   const [subject, setSubject] = useState(null);
   const [totalStars, setTotalStars] = useState(0);
   const [stamps, setStamps] = useState([]);
@@ -1607,7 +1669,6 @@ export default function App() {
     (count) => {
       const newTotal = totalStars + count;
       setTotalStars(newTotal);
-      // Every 5 stars → new stamp
       const prevStampCount = Math.floor(totalStars / 5);
       const newStampCount = Math.floor(newTotal / 5);
       if (newStampCount > prevStampCount && stamps.length < STAMPS.length) {
@@ -1619,6 +1680,7 @@ export default function App() {
     [totalStars, stamps]
   );
 
+  const goHome = () => { setSubject(null); setScreen("home"); };
   const goStamps = () => setScreen("stamps");
 
   let content;
@@ -1630,8 +1692,6 @@ export default function App() {
             setSubject(s);
             setScreen("subject");
           }}
-          stars={totalStars}
-          onStamps={goStamps}
         />
       );
       break;
@@ -1641,8 +1701,6 @@ export default function App() {
           subject={subject}
           onBack={() => setScreen("home")}
           onSelectMode={(mode) => setScreen(mode)}
-          stars={totalStars}
-          onStamps={goStamps}
         />
       );
       break;
@@ -1652,8 +1710,6 @@ export default function App() {
           subject={subject}
           onBack={() => setScreen("subject")}
           onEarnStar={earnStar}
-          stars={totalStars}
-          onStamps={goStamps}
         />
       );
       break;
@@ -1663,8 +1719,6 @@ export default function App() {
           subject={subject}
           onBack={() => setScreen("subject")}
           onEarnStar={earnStar}
-          stars={totalStars}
-          onStamps={goStamps}
         />
       );
       break;
@@ -1674,8 +1728,6 @@ export default function App() {
           subject={subject}
           onBack={() => setScreen("subject")}
           onEarnStar={earnStar}
-          stars={totalStars}
-          onStamps={goStamps}
         />
       );
       break;
@@ -1693,8 +1745,22 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--bg)", position: "relative" }}>
       <style>{globalCSS}</style>
-      <OceanBackground />
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 520, margin: "0 auto" }}>{content}</div>
+      <SoftBackground />
+      <div style={{
+        position: "relative",
+        zIndex: 1,
+        maxWidth: 520,
+        margin: "0 auto",
+        paddingBottom: 90,
+      }}>
+        {content}
+      </div>
+      <BottomNav
+        screen={screen}
+        onHome={goHome}
+        onStamps={goStamps}
+        stars={totalStars}
+      />
       {newStamp && <NewStampOverlay stamp={newStamp} onDone={() => setNewStamp(null)} />}
     </div>
   );
