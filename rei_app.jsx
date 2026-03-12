@@ -8,7 +8,7 @@ const IMG = {
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 const HIRAGANA = [
-  { char: "あ", reading: "a", hint: "🍎 あんぱん" },
+  { char: "あ", reading: "a", hint: "🐜 あり" },
   { char: "い", reading: "i", hint: "🐕 いぬ" },
   { char: "う", reading: "u", hint: "🐰 うさぎ" },
   { char: "え", reading: "e", hint: "🖼️ え" },
@@ -21,8 +21,8 @@ const HIRAGANA = [
   { char: "さ", reading: "sa", hint: "🐟 さかな" },
   { char: "し", reading: "shi", hint: "🦌 しか" },
   { char: "す", reading: "su", hint: "🍣 すし" },
-  { char: "せ", reading: "se", hint: "🦋 せみ" },
-  { char: "そ", reading: "so", hint: "🌊 そら" },
+  { char: "せ", reading: "se", hint: "🧹 せんせい" },
+  { char: "そ", reading: "so", hint: "🌤️ そら" },
 ];
 
 const KATAKANA = [
@@ -1269,33 +1269,33 @@ function TraceGame({ subject, onBack, onEarnStar }) {
 // ─── Matching Game ──────────────────────────────────────────────────────────
 function MatchingGame({ subject, onBack, onEarnStar }) {
   const [cards, setCards] = useState([]);
-  const [flipped, setFlipped] = useState([]);
+  const [firstPick, setFirstPick] = useState(null);
   const [matched, setMatched] = useState([]);
   const [moves, setMoves] = useState(0);
   const [finished, setFinished] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [shaking, setShaking] = useState(null);
 
   useEffect(() => {
     const pairs = generateMatchPairs(subject, 6);
     setCards(shuffle(pairs));
   }, [subject]);
 
-  const handleFlip = (index) => {
-    if (flipped.length === 2) return;
-    if (flipped.includes(index)) return;
+  const handlePick = (index) => {
     if (matched.includes(cards[index]?.pairId)) return;
+    if (firstPick === index) { setFirstPick(null); return; }
 
-    const newFlipped = [...flipped, index];
-    setFlipped(newFlipped);
-
-    if (newFlipped.length === 2) {
+    if (firstPick === null) {
+      setFirstPick(index);
+    } else {
       setMoves((m) => m + 1);
-      const [a, b] = newFlipped;
-      if (cards[a].pairId === cards[b].pairId) {
+      const a = firstPick;
+      const b = index;
+      if (cards[a].pairId === cards[b].pairId && a !== b) {
         setMatched((m) => [...m, cards[a].pairId]);
         setShowConfetti(true);
         setTimeout(() => setShowConfetti(false), 1000);
-        setTimeout(() => setFlipped([]), 400);
+        setFirstPick(null);
 
         if (matched.length + 1 === cards.length / 2) {
           setTimeout(() => {
@@ -1304,7 +1304,8 @@ function MatchingGame({ subject, onBack, onEarnStar }) {
           }, 800);
         }
       } else {
-        setTimeout(() => setFlipped([]), 800);
+        setShaking(b);
+        setTimeout(() => { setShaking(null); setFirstPick(null); }, 500);
       }
     }
   };
@@ -1319,7 +1320,7 @@ function MatchingGame({ subject, onBack, onEarnStar }) {
         onRetry={() => {
           const pairs = generateMatchPairs(subject, 6);
           setCards(shuffle(pairs));
-          setFlipped([]);
+          setFirstPick(null);
           setMatched([]);
           setMoves(0);
           setFinished(false);
@@ -1335,6 +1336,11 @@ function MatchingGame({ subject, onBack, onEarnStar }) {
       <InnerTopBar title={`${sub.label} マッチング`} onBack={onBack} />
       <ConfettiEffect active={showConfetti} />
       <div style={{ padding: "8px 16px 100px", maxWidth: 500, margin: "0 auto" }}>
+        {/* Instruction */}
+        <p style={{ textAlign: "center", fontSize: 16, fontWeight: 700, color: "var(--text-light)", marginBottom: 12 }}>
+          おなじ なかまの ペアを えらぼう！
+        </p>
+
         {/* Status pill */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
           <div style={{
@@ -1356,41 +1362,42 @@ function MatchingGame({ subject, onBack, onEarnStar }) {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
           {cards.map((card, i) => {
-            const isFlipped = flipped.includes(i);
+            const isPicked = firstPick === i;
             const isMatched = matched.includes(card.pairId);
+            const isShaking = shaking === i;
+            const isEmoji = typeof card.face === "string" && !card.isFlag && card.face.length <= 2;
             return (
               <button
                 key={i}
-                onClick={() => handleFlip(i)}
+                onClick={() => handlePick(i)}
                 style={{
                   aspectRatio: "1",
                   borderRadius: "var(--radius-sm)",
-                  border: "none",
-                  background: isMatched
-                    ? "#E0FFE8"
-                    : isFlipped
-                    ? "white"
-                    : `linear-gradient(135deg, ${sub.color}25, ${sub.color}45)`,
-                  fontSize: isFlipped || isMatched ? (typeof card.face === "string" && !card.isFlag && card.face.length <= 2 ? 36 : 18) : 28,
+                  border: isPicked ? `3px solid ${sub.color}` : "none",
+                  background: isMatched ? "#E0FFE8" : "white",
+                  fontSize: isEmoji ? 36 : card.isFlag ? 14 : 18,
                   fontWeight: 800,
                   fontFamily: "inherit",
                   cursor: isMatched ? "default" : "pointer",
-                  boxShadow: "var(--shadow-card)",
-                  transition: "all 0.3s ease",
-                  transform: isFlipped ? "rotateY(180deg)" : "rotateY(0)",
+                  boxShadow: isPicked ? `0 4px 16px ${sub.color}40` : "var(--shadow-card)",
+                  transition: "all 0.2s ease",
+                  transform: isPicked ? "scale(1.05)" : "scale(1)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  padding: card.isFlag && (isFlipped || isMatched) ? 6 : 0,
+                  padding: card.isFlag ? 6 : 4,
                   overflow: "hidden",
                   opacity: isMatched ? 0.5 : 1,
+                  animation: isShaking ? "shake 0.4s ease" : "none",
+                  color: "var(--text)",
+                  lineHeight: 1.2,
+                  wordBreak: "keep-all",
                 }}
               >
-                {isFlipped || isMatched
-                  ? card.isFlag
-                    ? <FlagImage code={card.face} size="small" />
-                    : card.face
-                  : "🦈"}
+                {card.isFlag
+                  ? <FlagImage code={card.face} size="small" />
+                  : card.face}
+                {isMatched && <span style={{ position: "absolute", fontSize: 16 }}>✅</span>}
               </button>
             );
           })}
@@ -1404,16 +1411,22 @@ function generateMatchPairs(subject, pairCount) {
   let items;
   switch (subject) {
     case "hiragana":
-      items = pick(HIRAGANA, pairCount).map((h) => ({
-        a: { face: h.char, pairId: h.char },
-        b: { face: h.reading, pairId: h.char },
-      }));
+      items = pick(HIRAGANA, pairCount).map((h) => {
+        const [emoji, word] = h.hint.split(" ");
+        return {
+          a: { face: emoji, pairId: h.char },
+          b: { face: word, pairId: h.char },
+        };
+      });
       break;
     case "katakana":
-      items = pick(KATAKANA, pairCount).map((k) => ({
-        a: { face: k.char, pairId: k.char },
-        b: { face: k.reading, pairId: k.char },
-      }));
+      items = pick(KATAKANA, pairCount).map((k) => {
+        const [emoji, word] = k.hint.split(" ");
+        return {
+          a: { face: emoji, pairId: k.char },
+          b: { face: word, pairId: k.char },
+        };
+      });
       break;
     case "numbers":
       items = pick(NUMBERS_DATA.counting, pairCount).map((n) => ({
