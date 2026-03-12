@@ -310,23 +310,69 @@ const globalCSS = `
     50% { opacity: 0.12; }
     100% { transform: translateY(-100vh) scale(1.1); opacity: 0; }
   }
+  @keyframes swimAround {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    25% { transform: translate(15px, -20px) rotate(5deg) scale(1.05); }
+    50% { transform: translate(-10px, -35px) rotate(-3deg) scale(1); }
+    75% { transform: translate(20px, -15px) rotate(4deg) scale(1.05); }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  }
+  @keyframes bubbleFloat {
+    0% { transform: translateY(0) scale(1); opacity: 0.15; }
+    50% { transform: translateY(-50vh) scale(1.2); opacity: 0.08; }
+    100% { transform: translateY(-100vh) scale(0.8); opacity: 0; }
+  }
 `;
 
 // ─── Components ─────────────────────────────────────────────────────────────
 
+const SHARK_CHARS = [
+  { src: `${BASE}images/characters/baby-shark.png`, name: "baby" },
+  { src: `${BASE}images/characters/daddy-shark.png`, name: "daddy" },
+  { src: `${BASE}images/characters/mommy-shark.png`, name: "mommy" },
+  { src: `${BASE}images/characters/grandma-shark.png`, name: "grandma" },
+  { src: `${BASE}images/characters/grandpa-shark.png`, name: "grandpa" },
+];
+
 function SoftBackground() {
-  const items = Array.from({ length: 12 }, (_, i) => ({
+  const sharks = Array.from({ length: 18 }, (_, i) => ({
     id: i,
-    size: randInt(20, 60),
-    left: randInt(0, 100),
-    top: randInt(0, 100),
+    char: SHARK_CHARS[i % SHARK_CHARS.length],
+    size: randInt(50, 110),
+    left: randInt(0, 95),
+    top: randInt(0, 95),
+    delay: Math.random() * 20,
+    dur: randInt(12, 28),
+    flip: Math.random() > 0.5,
+  }));
+  const bubbles = Array.from({ length: 10 }, (_, i) => ({
+    id: i + 100,
+    size: randInt(8, 24),
+    left: randInt(5, 95),
+    top: randInt(60, 100),
     delay: Math.random() * 15,
-    dur: randInt(18, 35),
-    color: BF_COLORS[i % 5],
+    dur: randInt(10, 22),
   }));
   return (
     <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, overflow: "hidden" }}>
-      {items.map((b) => (
+      {sharks.map((s) => (
+        <img
+          key={s.id}
+          src={s.char.src}
+          alt=""
+          style={{
+            position: "absolute",
+            width: s.size,
+            height: "auto",
+            left: `${s.left}%`,
+            top: `${s.top}%`,
+            opacity: 0.22,
+            transform: s.flip ? "scaleX(-1)" : "none",
+            animation: `swimAround ${s.dur}s ease-in-out ${s.delay}s infinite`,
+          }}
+        />
+      ))}
+      {bubbles.map((b) => (
         <div
           key={b.id}
           style={{
@@ -334,11 +380,11 @@ function SoftBackground() {
             width: b.size,
             height: b.size,
             borderRadius: "50%",
-            background: b.color,
-            opacity: 0.06,
+            border: "1.5px solid rgba(83,206,255,0.15)",
+            background: "rgba(83,206,255,0.05)",
             left: `${b.left}%`,
             top: `${b.top}%`,
-            animation: `floatUp ${b.dur}s linear ${b.delay}s infinite`,
+            animation: `bubbleFloat ${b.dur}s linear ${b.delay}s infinite`,
           }}
         />
       ))}
