@@ -21,14 +21,14 @@ const HIRAGANA = [
   { char: "さ", reading: "sa", hint: "🐟 さかな" },
   { char: "し", reading: "shi", hint: "🦌 しか" },
   { char: "す", reading: "su", hint: "🍣 すし" },
-  { char: "せ", reading: "se", hint: "🧹 せんせい" },
+  { char: "せ", reading: "se", hint: "👨‍🏫 せんせい" },
   { char: "そ", reading: "so", hint: "🌤️ そら" },
 ];
 
 const KATAKANA = [
   { char: "ア", reading: "a", hint: "🍦 アイス" },
   { char: "イ", reading: "i", hint: "🪑 イス" },
-  { char: "ウ", reading: "u", hint: "🎵 ウクレレ" },
+  { char: "ウ", reading: "u", hint: "🐄 ウシ" },
   { char: "エ", reading: "e", hint: "🦐 エビ" },
   { char: "オ", reading: "o", hint: "🍊 オレンジ" },
   { char: "カ", reading: "ka", hint: "📷 カメラ" },
@@ -56,16 +56,16 @@ const NUMBERS_DATA = {
 const ENGLISH_DATA = {
   alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""),
   words: [
-    { word: "Apple", ja: "りんご", emoji: "🍎" },
-    { word: "Bear", ja: "くま", emoji: "🐻" },
-    { word: "Cat", ja: "ねこ", emoji: "🐱" },
-    { word: "Dog", ja: "いぬ", emoji: "🐕" },
-    { word: "Egg", ja: "たまご", emoji: "🥚" },
-    { word: "Fish", ja: "さかな", emoji: "🐟" },
-    { word: "Grape", ja: "ぶどう", emoji: "🍇" },
-    { word: "Hat", ja: "ぼうし", emoji: "🎩" },
-    { word: "Ice", ja: "こおり", emoji: "🧊" },
-    { word: "Juice", ja: "ジュース", emoji: "🧃" },
+    { word: "Apple", ja: "りんご", emoji: "🍎", photo: "https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?w=400&h=400&fit=crop" },
+    { word: "Bear", ja: "くま", emoji: "🐻", photo: "https://images.unsplash.com/photo-1578823499267-7ea3e9ebbb92?w=400&h=400&fit=crop" },
+    { word: "Cat", ja: "ねこ", emoji: "🐱", photo: "https://images.unsplash.com/photo-1684176025644-95d5c9303648?w=400&h=400&fit=crop" },
+    { word: "Dog", ja: "いぬ", emoji: "🐕", photo: "https://images.unsplash.com/photo-1558788353-f76d92427f16?w=400&h=400&fit=crop" },
+    { word: "Egg", ja: "たまご", emoji: "🥚", photo: "https://images.unsplash.com/photo-1556889473-87a5322d1b9e?w=400&h=400&fit=crop" },
+    { word: "Fish", ja: "さかな", emoji: "🐟", photo: "https://images.unsplash.com/photo-1547068961-aa008634973d?w=400&h=400&fit=crop" },
+    { word: "Grape", ja: "ぶどう", emoji: "🍇", photo: "https://images.unsplash.com/photo-1580666427996-59d2cb97f5ab?w=400&h=400&fit=crop" },
+    { word: "Hat", ja: "ぼうし", emoji: "🎩", photo: "https://images.unsplash.com/photo-1634513789859-4ede56416675?w=400&h=400&fit=crop" },
+    { word: "Ice", ja: "こおり", emoji: "🧊", photo: "https://images.unsplash.com/photo-1565047761534-20df985915ca?w=400&h=400&fit=crop" },
+    { word: "Juice", ja: "ジュース", emoji: "🧃", photo: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop" },
   ],
 };
 
@@ -961,26 +961,16 @@ function generateQuiz(subject, count) {
         break;
       }
       case "english": {
-        const type = randInt(0, 1);
-        if (type === 0) {
-          const item = ENGLISH_DATA.words[randInt(0, ENGLISH_DATA.words.length - 1)];
-          const others = pick(ENGLISH_DATA.words.filter((w) => w.word !== item.word), 3).map((w) => w.word);
-          qs.push({
-            display: item.emoji,
-            question: `「${item.ja}」を えいご で いうと？`,
-            options: shuffle([item.word, ...others]),
-            answer: item.word,
-          });
-        } else {
-          const letter = ENGLISH_DATA.alphabet[randInt(0, 25)];
-          const others = pick(ENGLISH_DATA.alphabet.filter((l) => l !== letter), 3);
-          qs.push({
-            display: letter,
-            question: `この もじ は？`,
-            options: shuffle([letter, ...others]),
-            answer: letter,
-          });
-        }
+        const item = ENGLISH_DATA.words[randInt(0, ENGLISH_DATA.words.length - 1)];
+        const others = pick(ENGLISH_DATA.words.filter((w) => w.word !== item.word), 3).map((w) => w.word);
+        qs.push({
+          display: (
+            <img src={item.photo} alt={item.word} style={{ width: 180, height: 180, borderRadius: 24, objectFit: "cover", boxShadow: "var(--shadow-card)" }} />
+          ),
+          question: `これは えいごで なんて いう？`,
+          options: shuffle([item.word, ...others]),
+          answer: item.word,
+        });
         break;
       }
       case "colors": {
