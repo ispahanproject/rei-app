@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
+const BASE = import.meta.env.BASE_URL;
+const IMG = {
+  family: `${BASE}images/baby-shark-family.png`,
+  daddy: `${BASE}images/daddy-shark.png`,
+};
+
 // ─── Data ───────────────────────────────────────────────────────────────────
 const HIRAGANA = [
   { char: "あ", reading: "a", hint: "🍎 あんぱん" },
@@ -479,12 +485,16 @@ function HomeScreen({ onSelect, stars, onStamps }) {
         <div style={{ textAlign: "center", marginBottom: 24 }}>
           <div
             style={{
-              fontSize: 80,
               animation: "swim 3s ease-in-out infinite",
               display: "inline-block",
             }}
           >
-            🦈
+            <img
+              src={IMG.family}
+              alt="Baby Shark"
+              style={{ width: 160, height: "auto", pointerEvents: "none" }}
+              draggable={false}
+            />
           </div>
           {/* Speech bubble */}
           <div
@@ -1400,8 +1410,13 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle, stars, onStamps
     <div>
       <TopBar title="けっか" onBack={onBack} stars={stars} onStamps={onStamps} />
       <div style={{ padding: "40px 16px", maxWidth: 500, margin: "0 auto", textAlign: "center" }}>
-        <div style={{ fontSize: 72, animation: pct >= 1 ? "rainbow 2s linear infinite" : "swim 3s ease-in-out infinite" }}>
-          {pct >= 1 ? "🦈" : pct >= 0.6 ? "🐬" : "🐟"}
+        <div style={{ animation: pct >= 1 ? "rainbow 2s linear infinite" : "swim 3s ease-in-out infinite", display: "inline-block" }}>
+          <img
+            src={pct >= 1 ? IMG.family : IMG.daddy}
+            alt="result"
+            style={{ width: pct >= 1 ? 140 : 100, height: "auto" }}
+            draggable={false}
+          />
         </div>
         <h2 style={{ fontSize: 32, fontWeight: 900, margin: "16px 0 8px" }}>{msg}</h2>
         {subtitle && <p style={{ fontSize: 18, color: "var(--text-light)" }}>{subtitle}</p>}
@@ -1469,7 +1484,9 @@ function StampsScreen({ onBack, totalStars, stamps }) {
       <TopBar title="スタンプちょう" onBack={onBack} stars={totalStars} onStamps={() => {}} />
       <div style={{ padding: "24px 16px", maxWidth: 500, margin: "0 auto" }}>
         <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <div style={{ fontSize: 48, animation: "swim 3s ease-in-out infinite" }}>🐚</div>
+          <div style={{ animation: "swim 3s ease-in-out infinite", display: "inline-block" }}>
+            <img src={IMG.daddy} alt="stamps" style={{ width: 80, height: "auto" }} draggable={false} />
+          </div>
           <p style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>
             あつめた スタンプ: <span style={{ color: "#3B82F6" }}>{stamps.length}</span> / {STAMPS.length}
           </p>
