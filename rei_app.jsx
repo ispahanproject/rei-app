@@ -788,8 +788,8 @@ function QuizGame({ subject, onBack, onEarnStar }) {
     }
     setTimeout(() => {
       if (qIndex + 1 >= TOTAL) {
-        const earned = score + (correct ? 1 : 0);
-        onEarnStar(earned);
+        const finalScore = score + (correct ? 1 : 0);
+        if (finalScore === TOTAL) onEarnStar(TOTAL);
         setFinished(true);
       } else {
         setQIndex((i) => i + 1);
@@ -1335,7 +1335,7 @@ function MatchingGame({ subject, onBack, onEarnStar }) {
 
         if (matched.length + 1 === cards.length / 2) {
           setTimeout(() => {
-            onEarnStar(3);
+            onEarnStar(5);
             setFinished(true);
           }, 800);
         }
@@ -1503,8 +1503,9 @@ function generateMatchPairs(subject, pairCount) {
 // ─── Result Screen ──────────────────────────────────────────────────────────
 function ResultScreen({ score, total, onBack, onRetry, subtitle }) {
   const pct = score / total;
-  const msg = pct >= 1 ? "カンペキ！" : pct >= 0.6 ? "すごい！" : "がんばったね！";
-  const emoji = pct >= 1 ? "🎉" : pct >= 0.6 ? "⭐" : "💪";
+  const isPerfect = pct >= 1;
+  const msg = isPerfect ? "カンペキ！" : pct >= 0.6 ? "おしい！" : "がんばったね！";
+  const emoji = isPerfect ? "🎉" : pct >= 0.6 ? "💪" : "💪";
 
   return (
     <div>
@@ -1543,6 +1544,17 @@ function ResultScreen({ score, total, onBack, onRetry, subtitle }) {
         </div>
 
         {subtitle && <p style={{ fontSize: 18, color: "var(--text-light)", marginTop: 12, fontWeight: 600 }}>{subtitle}</p>}
+
+        {/* Star earned indicator */}
+        {isPerfect ? (
+          <p style={{ fontSize: 16, color: "#FFCC02", fontWeight: 800, marginTop: 12 }}>
+            ⭐ スター ゲット！ スタンプに ちかづいたよ！
+          </p>
+        ) : (
+          <p style={{ fontSize: 14, color: "var(--text-light)", marginTop: 12, fontWeight: 600 }}>
+            ぜんもん せいかい で ⭐スター がもらえるよ！
+          </p>
+        )}
 
         {/* Score */}
         <div style={{
@@ -1599,7 +1611,7 @@ function StampsScreen({ onBack, totalStars, stamps }) {
             あつめた スタンプ: <span style={{ color: "#53CEFF" }}>{stamps.length}</span> / {STAMPS.length}
           </p>
           <p style={{ fontSize: 14, color: "var(--text-light)", marginTop: 4, fontWeight: 600 }}>
-            ⭐ {Math.max(0, 5 - (totalStars % 5))} こ で つぎの スタンプ！
+            ⭐ あと {Math.max(0, 5 - (totalStars % 5))} かい パーフェクトで つぎの スタンプ！
           </p>
           {/* Progress bar */}
           <div
